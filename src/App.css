@@ -60,6 +60,7 @@ ul {
   color: var(--header-clr);
 }
 .header .theme-toggler img {
+  user-select: none;
   cursor: pointer;
   fill: var(--header-clr);
 }
