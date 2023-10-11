@@ -152,13 +152,13 @@ ul {
   border-bottom-right-radius: 5px;
   box-shadow: var(--shadow);
 }
+.todo-footer > * {
+  user-select: none;
+}
 .filters {
   display: flex;
   gap: 10px;
   cursor: pointer;
-}
-.filters > * {
-  user-select: none;
 }
 .filters > *:hover {
   color: var(--header-clr);
@@ -166,7 +166,6 @@ ul {
 .clear {
   cursor: pointer;
   color: hsl(233, 11%, 84%);
-  user-select: none;
 }
 .clear:hover {
   color: var(--header-clr);
