@@ -11,10 +11,18 @@ export default function Header() {
   });
 
   useEffect(() => {
+    if(theme === "dark") {
+      document.body.classList.add("dark")
+    }else {
+      document.body.classList.remove("dark")
+    }
+
+
     localStorage.setItem("Theme", theme);
   }, [theme]);
 
   function toggleTheme() {
+
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   }
 
