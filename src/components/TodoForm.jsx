@@ -4,29 +4,25 @@ import { useState } from "react";
 export default function TodoForm({ addTodo }) {
   const [todoInput, setTodoInput] = useState("");
 
-  function handleChange(e) {
-    setTodoInput(e.target.value);
-  }
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    //TODO Add the value in the input to a new todo item
-    if (todoInput) {
+    if (todoInput.trim()) {
       addTodo(todoInput);
+      setTodoInput("");
     }
+  };
 
-    setTodoInput("");
-  }
   return (
     <div className="todo-form">
-        <label htmlFor="todo-input" className="input-circle"></label>
+      <label htmlFor="todo-input" className="input-circle"></label>
       <form onSubmit={handleSubmit}>
         <input
           id="todo-input"
           type="text"
           name="todo-input"
           placeholder="Create a new todo..."
-          onChange={handleChange}
+          autoComplete="off"
+          onChange={(e) => setTodoInput(e.target.value)}
           value={todoInput}
         />
       </form>

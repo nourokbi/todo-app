@@ -7,76 +7,81 @@ import TodoFooter from "./TodoFooter";
 export default function Todo() {
   const [todos, setTodos] = useState(() => {
     const localValue = localStorage.getItem("TODOS");
-    if (localValue == null) return [];
-
-    return JSON.parse(localValue);
+    return localValue ? JSON.parse(localValue) : [];
   });
   const [tempTodos, setTempTodos] = useState([...todos]);
   const [show, setShow] = useState("all");
+  const [draggedItem, setDraggedItem] = useState(null);
 
-  // edit Todos (add, delete, change status)
-  function addTodo(val) {
+  // Edit Todos (add, delete, change status)
+  const addTodo = (val) => {
     const newTodo = {
       id: Math.floor(Math.random() * 100000),
       title: val,
       isCompleted: false,
     };
-
     setTodos((prevTodos) => [...prevTodos, newTodo]);
-  }
-  function deleteTodo(id) {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id != id));
-  }
-  function toggleTodo(id, checked) {
+  };
+
+  const deleteTodo = (id) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  };
+
+  const toggleTodo = (id, checked) => {
     setTodos((prevTodos) =>
-      prevTodos.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, isCompleted: checked };
-        }
-        return todo;
-      })
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, isCompleted: checked } : todo
+      )
     );
-  }
-  // shown Todos
-  function filteredTodos(t) {
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (index) => {
+    setDraggedItem(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (dropIndex) => {
+    if (draggedItem === null) return;
+
+    const updatedTodos = [...todos];
+    const [draggedTodo] = updatedTodos.splice(draggedItem, 1);
+    updatedTodos.splice(dropIndex, 0, draggedTodo);
+
+    setTodos(updatedTodos);
+    setDraggedItem(null);
+  };
+
+  // Filter todos based on current view
+  useEffect(() => {
     if (show === "active") {
-      t = todos.filter((todo) => !todo.isCompleted);
+      setTempTodos(todos.filter((todo) => !todo.isCompleted));
     } else if (show === "completed") {
-      t = todos.filter((todo) => todo.isCompleted);
+      setTempTodos(todos.filter((todo) => todo.isCompleted));
     } else {
-      t = [...todos];
+      setTempTodos([...todos]);
     }
-    setTempTodos(t);
-  }
+  }, [todos, show]);
 
-  // Functions to be passed to TodoFooter Component
-  function calcActive() {
-    let activeCount = 0;
-    for (let i = 0; i < todos.length; i++) {
-      if (todos[i].isCompleted === false) {
-        activeCount++;
-      }
-    }
-    return activeCount;
-  }
-  function showAll() {
-    setShow("all");
-  }
-  function showActive() {
-    setShow("active");
-  }
-  function showCompleted() {
-    setShow("completed");
-  }
-  function deleteCompleted() {
-    setTodos(todos.filter((todo) => !todo.isCompleted));
-  }
-
-  // assign shown todos every render
+  // Save to localStorage
   useEffect(() => {
     localStorage.setItem("TODOS", JSON.stringify(todos));
-    filteredTodos();
-  }, [todos, show]);
+  }, [todos]);
+
+  // Functions to be passed to TodoFooter Component
+  const calcActive = () => todos.filter((todo) => !todo.isCompleted).length;
+  const showAll = () => setShow("all");
+  const showActive = () => setShow("active");
+  const showCompleted = () => setShow("completed");
+  const deleteCompleted = () =>
+    setTodos(todos.filter((todo) => !todo.isCompleted));
 
   return (
     <div className="container">
@@ -84,27 +89,31 @@ export default function Todo() {
         <TodoForm addTodo={addTodo} />
         {tempTodos.length > 0 ? (
           <TodoList>
-            {tempTodos.map((todo) => {
-              return (
-                <TodoItem
-                  style={
-                    todo.isCompleted
-                      ? {
-                          textDecoration: "line-through",
-                          color: "hsl(233, 14%, 35%)",
-                        }
-                      : null
-                  }
-                  id={todo.id}
-                  toggleTodo={toggleTodo}
-                  deleteTodo={deleteTodo}
-                  key={todo.id}
-                  isCompleted={todo.isCompleted}
-                >
-                  {todo.title}
-                </TodoItem>
-              );
-            })}
+            {tempTodos.map((todo, index) => (
+              <TodoItem
+                style={
+                  todo.isCompleted
+                    ? {
+                        textDecoration: "line-through",
+                        color: "hsl(233, 14%, 35%)",
+                      }
+                    : null
+                }
+                id={todo.id}
+                toggleTodo={toggleTodo}
+                deleteTodo={deleteTodo}
+                key={todo.id}
+                isCompleted={todo.isCompleted}
+                index={index}
+                draggedItem={draggedItem}
+                handleDragStart={handleDragStart}
+                handleDragEnd={handleDragEnd}
+                handleDragOver={handleDragOver}
+                handleDrop={handleDrop}
+              >
+                {todo.title}
+              </TodoItem>
+            ))}
           </TodoList>
         ) : (
           <div className="todo-list">
@@ -120,6 +129,7 @@ export default function Todo() {
           showAll={showAll}
           showCompleted={showCompleted}
           deleteCompleted={deleteCompleted}
+          currentFilter={show}
         />
       </div>
     </div>

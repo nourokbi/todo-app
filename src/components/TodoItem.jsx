@@ -9,37 +9,41 @@ export default function TodoItem({
   id,
   style,
   isCompleted,
+  index,
+  draggedItem,
+  handleDragStart,
+  handleDragEnd,
+  handleDragOver,
+  handleDrop,
 }) {
-  // useState is not usefull in every sitiuation when we don't need the component rerender
-  // to change other values depend on it
-  let check = isCompleted;
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
-  function toggleChecked() {
-    check = !check;
-    toggleTodo(id, check);
-  }
-  function showCross() {
-    setShow(true)
-  }
-  function handleMouseOut() {
-    setShow(false)
-  }
+  const toggleChecked = () => {
+    toggleTodo(id, !isCompleted);
+  };
+
+  const isDragging = draggedItem === index;
 
   return (
     <li
-      className="todo-item"
+      className={`todo-item ${isDragging ? "dragging" : ""}`}
       style={style}
-      onMouseOver={showCross}
-      onMouseOut={handleMouseOut}
+      onMouseOver={() => setShow(true)}
+      onMouseOut={() => setShow(false)}
+      draggable="true"
+      onDragStart={() => handleDragStart(index)}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDrop={() => handleDrop(index)}
     >
       <div className="checkbox" onClick={toggleChecked}>
-        <span className={`checkmark ${check ? "checked" : ""}`}></span>
+        <span className={`checkmark ${isCompleted ? "checked" : ""}`}></span>
       </div>
-      <p>
-      {children}
-      </p>
-      <button className={`todo-delete-btn ${show ? "show" : ""}`} onClick={() => deleteTodo(id)}>
+      <p>{children}</p>
+      <button
+        className={`todo-delete-btn ${show ? "show" : ""}`}
+        onClick={() => deleteTodo(id)}
+      >
         <img src={cross} alt="cross icon" />
       </button>
     </li>

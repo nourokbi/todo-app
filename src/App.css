@@ -16,14 +16,55 @@
   font-family: "Josefin Sans", sans-serif;
   box-sizing: border-box;
 }
+
+/* App wrapper and background setup */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-clr);
+}
+
+.background-header {
+  width: 100%;
+  height: 30vh;
+  background-image: url("./images/bg-mobile-light.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Desktop background - light mode */
+@media (min-width: 551px) {
+  .background-header {
+    background-image: url("./images/bg-desktop-light.jpg");
+  }
+}
+
+/* Dark mode backgrounds */
+body.dark .background-header {
+  background-image: url("./images/bg-mobile-dark.jpg");
+}
+
+@media (min-width: 551px) {
+  body.dark .background-header {
+    background-image: url("./images/bg-desktop-dark.jpg");
+  }
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 0 20px;
+  margin-top: -25vh; /* Pull content up to overlap background */
+  position: relative;
+  z-index: 1;
+}
+
 #root {
   min-height: 100vh;
   color: rgba(255, 255, 255, 0.87);
-  background-color: var(--bg-clr);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 }
 body {
   margin: 0;
@@ -48,7 +89,7 @@ ul {
   list-style-type: none;
 }
 .container {
-  width: 500px;
+  width: 100%;
 }
 .header {
   display: flex;
@@ -57,12 +98,19 @@ ul {
 }
 .header h1 {
   letter-spacing: 8px;
-  color: var(--header-clr);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .header .theme-toggler img {
   user-select: none;
   cursor: pointer;
-  fill: var(--header-clr);
+  fill: #ffffff;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+.header .theme-toggler img:hover {
+  opacity: 1;
 }
 .todo > * {
   background-color: var(--todo-bg) !important;
@@ -121,6 +169,16 @@ ul {
   border-bottom: 1px solid var(--border-clr);
   font-size: 1.125rem;
   transition: all ease-in-out 0.3s;
+  cursor: move;
+  cursor: grab;
+}
+.todo .todo-item:active {
+  cursor: grabbing;
+}
+.todo .todo-item.dragging {
+  opacity: 0.5;
+  background-color: var(--hover-clr);
+  transform: scale(1.02);
 }
 .todo .todo-item:hover {
   background-color: var(--hover-clr);
@@ -247,7 +305,7 @@ ul {
     font-size: 14px;
     --padding: 5px 10px;
   }
-  .container {
-    width: 90%;
+  .content-wrapper {
+    padding: 0 10px;
   }
 }

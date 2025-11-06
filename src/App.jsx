@@ -4,10 +4,13 @@ import Todo from "./components/Todo";
 
 function App() {
   return (
-    <>
-      <Header/>
-      <Todo />
-    </>
+    <div className="app-wrapper">
+      <div className="background-header"></div>
+      <div className="content-wrapper">
+        <Header />
+        <Todo />
+      </div>
+    </div>
   );
 }
 

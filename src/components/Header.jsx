@@ -5,26 +5,21 @@ import sun from "../images/icon-sun.svg";
 export default function Header() {
   const [theme, setTheme] = useState(() => {
     const localValue = localStorage.getItem("Theme");
-    if (localValue == null) return "dark";
-
-    return localValue;
+    return localValue || "dark";
   });
 
   useEffect(() => {
-    if(theme === "dark") {
-      document.body.classList.add("dark")
-    }else {
-      document.body.classList.remove("dark")
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
     }
-
-
     localStorage.setItem("Theme", theme);
   }, [theme]);
 
-  function toggleTheme() {
-
+  const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  }
+  };
 
   return (
     <div className="container">
